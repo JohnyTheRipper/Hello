@@ -1,0 +1,261 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Homepage</title>
+    <link rel="stylesheet" href="menu.css"> <!-- Link to the external CSS file -->
+    <style>
+        body {
+            font-family: 'Helvetica Neue', Arial, sans-serif;
+            background-color: #2E3440;
+            color: #D8DEE9;
+            margin: 0;
+            padding: 0;
+        }
+        header {
+            background-color: #4C566A;
+            padding: 20px;
+            text-align: center;
+            color: #ECEFF4;
+            cursor: pointer; /* Change cursor to pointer */
+        }
+        h1 {
+            margin: 0;
+            font-size: 2.5rem;
+        }
+        .content {
+            margin: 40px auto;
+            width: 80%;
+            max-width: 800px;
+        }
+        h2 {
+            color: #81A1C1;
+            font-size: 1.8rem;
+        }
+        p {
+            font-size: 1.3rem;
+            line-height: 2;
+            color: #D8DEE9;
+        }
+        .code {
+            background-color: #3B4252;
+            padding: 15px;
+            border-radius: 5px;
+            font-family: monospace;
+            color: #A3BE8C;
+            margin: 5px 0;
+            position: relative;
+        }
+        .copy-btn {
+            position: absolute;
+            top: 5px;
+            right: 5px;
+            background-color: #88C0D0;
+            border: none;
+            padding: 5px 10px;
+            border-radius: 5px;
+            color: #2E3440;
+            cursor: pointer;
+            font-size: 0.7rem;
+            display: none;
+        }
+        .code:hover .copy-btn {
+            display: block;
+        }
+        footer {
+            margin-top: 40px;
+            text-align: center;
+            color: #B48EAD;
+            font-size: 0.5rem;
+        }
+        a {
+            color: #88C0D0;
+            text-decoration: none;
+        }
+        a:hover {
+            text-decoration: underline;
+        }
+        .overlay {
+            height: 0; /* Ensure it's hidden by default */
+            width: 100%;
+            position: fixed;
+            z-index: 1;
+            left: 0;
+            top: 0;
+            background-color: rgba(0, 0, 0, 0.9);
+            overflow: hidden; /* Disable scroll */
+            transition: height 0.5s; /* Transition effect for height */
+        }
+        .overlay-content {
+            position: relative;
+            top: 25%; /* Center vertically */
+            text-align: center; /* Centered text/links */
+        }
+        .overlay a {
+            padding: 8px;
+            text-decoration: none;
+            font-size: 36px;
+            color: #818181;
+            display: block; /* Display block instead of inline */
+            transition: color 0.3s; /* Transition effects on hover (color) */
+        }
+        .overlay a:hover,
+        .overlay a:focus {
+            color: #f1f1f1;
+        }
+        .overlay .closebtn {
+            position: absolute;
+            top: 20px;
+            right: 45px;
+            font-size: 60px;
+        }
+    </style>
+</head>
+<body>
+    <header onclick="openNav()"> <!-- Trigger the overlay on header click -->
+        <h1>Welcome to the Homepage</h1>
+    </header>
+
+    <div id="myNav" class="overlay">
+        <a href="javascript:void(0)" class="closebtn" onclick="closeNav()">&times;</a>
+        <div class="overlay-content">
+            <a href="crypto.html">Crypto</a>
+            <a href="#">Logins</a>
+            <a href="business.html">Business</a>
+            <a href="budget.html">Finances</a>
+        </div>
+    </div>
+
+    <div class="content">
+        <h2>If you are trying to reach NetHost, use the following:</h2>
+        <div class="code">
+            <button class="copy-btn" onclick="copyToClipboard('ssh-code')">Copy</button>
+            <span id="ssh-code">ssh -L 19998:127.0.0.1:19999 root@50.116.39.182</span>
+        </div>
+        <div class="code">
+            <button class="copy-btn" onclick="copyToClipboard('url-code')">Copy</button>
+            <span id="url-code"><a href="http://localhost:19998" target="_blank">http://localhost:19998</a></span>
+        </div>
+        <h2>To modify this website, use</h2>
+        <div class="code">
+            <button class="copy-btn" onclick="copyToClipboard('edit-code')">Copy</button>
+            <span id="edit-code"><a href="sudo nano /srv/http/index.html" target="_blank">sudo nano /srv/http/index.html</a></span>
+        </div>
+
+        <h2>To-Do List</h2>
+        <input type="text" id="todo-input" placeholder="Add a new task..." />
+        <button id="add-todo-btn">Add</button>
+        <ul id="todo-list"></ul>
+    </div>
+
+    <footer>
+        <p>© 2024 Vit... Who am I kidding? nobody will see this 😂</p>
+    </footer>
+
+    <script>
+        // Functions for overlay and clipboard functionality
+        function openNav() {
+            const overlay = document.getElementById("myNav");
+            overlay.style.height = "100%"; // Set height to 100% when opening
+        }
+        
+        function closeNav() {
+            const overlay = document.getElementById("myNav");
+            overlay.style.height = "0"; // Set height back to 0 when closing
+        }
+
+        function copyToClipboard(id) {
+            const textToCopy = document.getElementById(id).innerText;
+            navigator.clipboard.writeText(textToCopy).then(() => {
+                alert('Copied to clipboard: ' + textToCopy);
+            }, () => {
+                alert('Failed to copy text');
+            });
+        }
+
+        // Load to-do list from JSON file
+        async function loadTodos() {
+            try {
+                const response = await fetch('todos.json');
+                if (!response.ok) throw new Error('Network response was not ok');
+                const todos = await response.json();
+                const todoList = document.getElementById('todo-list');
+                todoList.innerHTML = ''; // Clear the list
+
+                todos.forEach(todo => {
+                    const li = document.createElement('li');
+                    li.textContent = todo.text;
+                    const deleteBtn = document.createElement('button');
+                    deleteBtn.textContent = 'Delete';
+                    deleteBtn.onclick = () => removeTodo(todo.id);
+                    li.appendChild(deleteBtn);
+                    todoList.appendChild(li);
+                });
+            } catch (error) {
+                console.error('Error loading todos:', error);
+            }
+        }
+
+        // Add new to-do item
+        function addTodo() {
+            const input = document.getElementById('todo-input');
+            const todoText = input.value.trim();
+            if (!todoText) return;
+
+            // Create a new todo object
+            const newTodo = {
+                id: Date.now(), // Use timestamp as unique ID
+                text: todoText
+            };
+
+            // Save new todo to JSON
+            saveTodoToFile(newTodo);
+            input.value = ''; // Clear input
+        }
+
+        // Remove to-do item
+        function removeTodo(id) {
+            // Remove from JSON
+            fetch('todos.json')
+                .then(response => response.json())
+                .then(todos => {
+                    const updatedTodos = todos.filter(todo => todo.id !== id);
+                    saveTodos(updatedTodos);
+                });
+        }
+
+        // Save to-do list to JSON file
+        function saveTodoToFile(newTodo) {
+            fetch('todos.json')
+                .then(response => response.json())
+                .then(todos => {
+                    todos.push(newTodo);
+                    saveTodos(todos);
+                });
+        }
+
+        // Function to save updated to-do list
+        function saveTodos(todos) {
+            const json = JSON.stringify(todos);
+            const blob = new Blob([json], { type: 'application/json' });
+            const url = URL.createObjectURL(blob);
+
+            // Create a temporary link to download the JSON file
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = 'todos.json';
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+        }
+
+        // Event listener for adding todo
+        document.getElementById('add-todo-btn').onclick = addTodo;
+
+        // Load existing to-dos when the page loads
+        window.onload = loadTodos;
+    </script>
+</body>
+</html>
+
